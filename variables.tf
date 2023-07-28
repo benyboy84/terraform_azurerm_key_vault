@@ -161,3 +161,18 @@ variable "private_endpoint_subnetid" {
   type        = string
   default     = null
 }
+
+variable "dns_record" {
+  description = <<DESCRIPTION
+  (Optional) A dns_record block as documented below.
+  object({
+    resource_group_name = (Required) Specifies the name of the resource group where the private DNS zone is located in.
+    ttl                 = (Optional) The Time To Live (TTL) of the DNS record in seconds.
+  })
+  DESCRIPTION
+  type = object({
+    resource_group_name = string
+    ttl                 = optional(number, 10)
+  })
+  default = null
+}
