@@ -1,9 +1,9 @@
-#---------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Assigning objects ids to RBAC roles: 
 #  - rbac_keyvault_administrator
 #  - rbac_keyvault_secrets_users
 #  - rbac_keyvault_reader
-#---------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 resource "azurerm_role_assignment" "rbac_keyvault_administrator" {
   for_each = toset(var.enable_rbac_authorization ? var.admin_objects_ids : [])

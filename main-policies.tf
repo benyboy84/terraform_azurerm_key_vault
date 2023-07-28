@@ -1,6 +1,6 @@
-#---------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Creating "reader" and "admin" Access policies 
-#---------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 resource "azurerm_key_vault_access_policy" "readers_policy" {
   for_each = toset(var.enable_rbac_authorization ? [] : var.reader_objects_ids)

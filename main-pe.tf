@@ -1,6 +1,6 @@
-#---------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Creating Private Endpoint
-#---------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 resource "azurerm_private_endpoint" "this" {
   count = var.private_endpoint_subnetid != null ? 1 : 0
@@ -25,7 +25,10 @@ resource "azurerm_private_endpoint" "this" {
 
 }
 
+# ------------------------------------------------------------------------------
 # Create DNS A Records within Azure Private DNS for `blob` private endpoint
+# ------------------------------------------------------------------------------
+
 resource "azurerm_private_dns_a_record" "blob" {
   count = (var.private_endpoint != null || var.private_endpoint_subnetid != null) && var.containers != null && var.dns_record != null ? 1 : 0
 
