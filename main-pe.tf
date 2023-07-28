@@ -30,12 +30,12 @@ resource "azurerm_private_endpoint" "this" {
 # ------------------------------------------------------------------------------
 
 resource "azurerm_private_dns_a_record" "blob" {
-  count = (var.private_endpoint != null || var.private_endpoint_subnetid != null) && var.containers != null && var.dns_record != null ? 1 : 0
+  count = var.private_endpoint_subnetid != null && var.dns_record != null ? 1 : 0
 
   provider            = azurerm.dns
   name                = var.name
   resource_group_name = var.dns_record.resource_group_name
-  zone_name           = "privatelink.blob.core.windows.net"
+  zone_name           = "privatelink.vaultcore.azure.net"
   ttl                 = var.dns_record.ttl
-  records             = [azurerm_private_endpoint.blob[0].private_service_connection[0].private_ip_address]
+  records             = [azurerm_private_endpoint.this[0].private_service_connection[0].private_ip_address]
 }
