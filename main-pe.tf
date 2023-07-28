@@ -2,29 +2,15 @@
 # Creating Private Endpoint
 #---------------------------------------------------------
 
-# Get Networking Data for a Private Endpoint
-data "azurerm_subnet" "this" {
-  count = var.private_endpoint_subnet != null ? 1 : 0
-
-  name                 = var.private_endpoint_subnet.name
-  virtual_network_name = var.private_endpoint_subnet.virtual_network_name
-  resource_group_name  = var.private_endpoint_subnet.resource_group_name
-
-}
-
-# Private Endpoint Creation or selection
 resource "azurerm_private_endpoint" "this" {
-  count = var.private_endpoint_subnet != null ? 1 : 0
+  count = var.private_endpoint_subnetid != null ? 1 : 0
 
   name                          = "${var.name}-pe"
   resource_group_name           = var.resource_group_name
   location                      = var.location
-  subnet_id                     = data.azurerm_subnet.this[0].id
+  subnet_id                     = var.private_endpoint_subnetid
   custom_network_interface_name = "${var.name}-nic"
-  tags = merge(var.tags, {
-    creation_date        = "${time_static.this.year}-${time_static.this.month}-${time_static.this.day}"
-    managed_by_terraform = "true"
-  })
+  tags                          = var.tags
 
   private_service_connection {
     name                           = "${var.name}-pe" 
@@ -37,4 +23,16 @@ resource "azurerm_private_endpoint" "this" {
     ignore_changes = [private_dns_zone_group]
   }
 
+}
+
+# Create DNS A Records within Azure Private DNS for `blob` private endpoint
+resource "azurerm_private_dns_a_record" "blob" {
+  count = (var.private_endpoint != null || var.private_endpoint_subnetid != null) && var.containers != null && var.dns_record != null ? 1 : 0
+
+  provider            = azurerm.dns
+  name                = var.name
+  resource_group_name = var.dns_record.resource_group_name
+  zone_name           = "privatelink.blob.core.windows.net"
+  ttl                 = var.dns_record.ttl
+  records             = [azurerm_private_endpoint.blob[0].private_service_connection[0].private_ip_address]
 }
