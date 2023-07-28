@@ -94,6 +94,15 @@ variable "network_acls" {
   })
   default = null
 
+  validation {
+    condition     = alltrue([for acls in var.network_acls : contains(["AzureServices", "None"], acls.bypass)])
+    error_message = "Possible values are `AzureServices` and `None`."
+  }
+  validation {
+    condition     = alltrue([for acls in var.network_acls : contains(["Allow", "Deny"], acls.default_action)])
+    error_message = "Possible values are `Allow` and `Deny`."
+  }
+
 }
 
 variable "purge_protection_enabled" {
