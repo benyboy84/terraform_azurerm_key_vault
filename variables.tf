@@ -156,12 +156,8 @@ variable "reader_objects_ids" {
 # Private Endpoint for Key Vault
 #---------------------------------------------------------
 
-variable "private_endpoint_subnet" {
-  description = "Network information required to create a private endpoint."
-  type = object({
-    virtual_network_name = string
-    name                 = string
-    resource_group_name  = string
-  })
-  default = null
+variable "private_endpoint_subnetid" {
+  description = "(Optional) The ID of the Subnet from which Private IP Addresses will be allocated for this Private Endpoint."
+  type        = string
+  default     = null
 }
