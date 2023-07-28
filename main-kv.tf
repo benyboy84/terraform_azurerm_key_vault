@@ -15,10 +15,7 @@ resource "azurerm_key_vault" "this" {
   purge_protection_enabled        = var.purge_protection_enabled
   enable_rbac_authorization       = var.enable_rbac_authorization
   public_network_access_enabled   = var.public_network_access_enabled
-  tags = merge(var.tags, {
-    creation_date        = "${time_static.this.year}-${time_static.this.month}-${time_static.this.day}"
-    managed_by_terraform = "true"
-  })
+  tags                            = var.tags
 
   dynamic "network_acls" {
     for_each = var.network_acls != null ? [true] : []
