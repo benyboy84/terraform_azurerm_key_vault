@@ -1,0 +1,82 @@
+# This workflow runs on `pull_request`.
+#
+# `Terraform` job uses `checkout` to download the content of the repository. It installs the latest version of Terraform CLI
+# and configures the Terraform CLI configuration file with an API token for Terraform Cloud (app.terraform.io). It runs `terraform init`
+# to initialize the director. It uses the GitHub Action `GitHubAction_terraform-fmt` to run `terraform fmt` and `GitHubAction_terraform-validate`
+# to run `terraform validate`.
+#
+# Documentation
+# - https://github.com/actions/checkout
+# - https://github.com/benyboy84/GitHubAction_terraform-fmt
+# - https://github.com/benyboy84/GitHubAction_terraform-validate
+# - https://github.com/benyboy84/GitHubAction_terraform-plan
+#
+# Prerequisites:
+# - An Azure account and Azure Access Credentials
+# - A Terraform Cloud account
+#
+# Environment variables:
+# - ARM_CLIENT_ID
+# - ARM_CLIENT_SECRET
+# - ARM_TENANT_ID
+#
+# Terraform Cloud user API token stored as a GitHub secret (e.g. TF_API_TOKEN) in the repository.
+#   Documentation:
+#     - https://www.terraform.io/docs/cloud/users-teams-organizations/api-tokens.html
+#     - https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets
+#
+# GitHub secret in step `Setup Terraform`.
+#   Example:
+#     - name: Setup Terraform
+#       uses: hashicorp/setup-terraform@v1
+#       with:
+#         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+name: Terraform
+
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+    branches:
+      - '*'                      # matches every branch that doesn't contain a '/'
+      - '*/*'                    # matches every branch containing a single '/'
+      - '**'                     # matches every branch
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Format
+        id: fmt
+        uses: benyboy84/GitHubAction_terraform-fmt@v1
+        with:
+          Recursive: true
+          Comment: true
+
+      - name: Terraform Validate
+        id: validate
+        uses: benyboy84/GitHubAction_terraform-validate@v1
+
