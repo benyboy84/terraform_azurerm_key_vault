@@ -167,28 +167,3 @@ variable "reader_objects_ids" {
     error_message = "Reader Objects IDs must contains GUID."
   }
 }
-
-#---------------------------------------------------------
-# Private Endpoint for Key Vault
-#---------------------------------------------------------
-
-variable "private_endpoint_subnetid" {
-  description = "(Optional) The ID of the Subnet from which Private IP Addresses will be allocated for this Private Endpoint."
-  type        = string
-  default     = null
-}
-
-variable "dns_record" {
-  description = <<DESCRIPTION
-  (Optional) A dns_record block as documented below.
-  object({
-    resource_group_name = (Required) Specifies the name of the resource group where the private DNS zone is located in.
-    ttl                 = (Optional) The Time To Live (TTL) of the DNS record in seconds.
-  })
-  DESCRIPTION
-  type = object({
-    resource_group_name = string
-    ttl                 = optional(number, 10)
-  })
-  default = null
-}
