@@ -3,58 +3,66 @@
 # ------------------------------------------------------------------------------
 
 variable "name" {
-  description = "Specifies the name of the Key Vault. Changing this forces a new resource to be created. The name must be globally unique. If the vault is in a recoverable state then the vault will need to be purged before reusing the name."
+  description = "(Required) Specifies the name of the Key Vault. Changing this forces a new resource to be created. The name must be globally unique. If the vault is in a recoverable state then the vault will need to be purged before reusing the name."
   type        = string
 }
 
 variable "location" {
-  description = "Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created."
+  description = "(Required) Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created."
   type        = string
 }
 
 variable "resource_group_name" {
-  description = "The name of the resource group in which to create the Key Vault. Changing this forces a new resource to be created."
+  description = "(Required) The name of the resource group in which to create the Key Vault. Changing this forces a new resource to be created."
   type        = string
 }
 
 variable "sku_name" {
-  description = "The Name of the SKU used for this Key Vault. Possible values are \"standard\" and \"premium\"."
+  description = "(Required) The Name of the SKU used for this Key Vault. Possible values are `standard` and `premium`."
   type        = string
   default     = "standard"
 
 
   validation {
     condition     = contains(["standard", "premium"], var.sku_name)
-    error_message = "Possible values are \"standard\" and \"premium\"."
+    error_message = "Possible values are `standard` and `premium`."
   }
 }
 
+# ------------------------------------------------------------------------------
+
 variable "enabled_for_deployment" {
-  description = "Boolean flag to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault."
+  description = "(Optional) Boolean flag to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault."
   type        = bool
   default     = false
 }
 
 variable "enabled_for_disk_encryption" {
-  description = "Boolean flag to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys."
+  description = "(Optional) Boolean flag to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys."
   type        = bool
   default     = false
 }
 
 variable "enabled_for_template_deployment" {
-  description = "Boolean flag to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault."
+  description = "(Optional) Boolean flag to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault"
   type        = bool
   default     = false
 }
 
 variable "enable_rbac_authorization" {
-  description = "Boolean flag to specify whether Azure Key Vault uses Role Based Access Control (RBAC) for authorization of data actions."
+  description = "(Optional) Boolean flag to specify whether Azure Key Vault uses Role Based Access Control (RBAC) for authorization of data actions."
   type        = bool
   default     = false
 }
 
 variable "network_acls" {
-  description = "Network rules to apply to key vault."
+  description = <<EOT
+  (Optional) A network_acls block as defined below.
+    bypass                     = (Required) Specifies which traffic can bypass the network rules. Possible values are `AzureServices` and `None`.
+    default_action             = (Required) The Default Action to use when no rules match from `ip_rules` / `virtual_network_subnet_ids`. Possible values are `Allow` and `Deny`.
+    ip_rules                   = (Optional) One or more IP Addresses, or CIDR Blocks which should be able to access the Key Vault.
+    virtual_network_subnet_ids = (Optional) One or more Subnet IDs which should be able to access this Key Vault.
+  EOT
   type = object({
     bypass                     = string,
     default_action             = string,
@@ -66,19 +74,19 @@ variable "network_acls" {
 }
 
 variable "purge_protection_enabled" {
-  description = "Is Purge Protection enabled for this Key Vault?"
-  type        = bool
-  default     = true
-}
-
-variable "public_network_access_enabled" {
-  description = "Whether public network access is allowed for this Key Vault."
+  description = "(Optional) Is Purge Protection enabled for this Key Vault?"
   type        = bool
   default     = false
 }
 
+variable "public_network_access_enabled" {
+  description = "(Optional) Whether public network access is allowed for this Key Vault. "
+  type        = bool
+  default     = true
+}
+
 variable "soft_delete_retention_days" {
-  description = "The number of days that items should be retained for once soft-deleted. This value can be between `7` and `90` days."
+  description = "(Optional) The number of days that items should be retained for once soft-deleted. This value can be between `7` and `90` days."
   type        = number
   default     = 7
 
@@ -88,6 +96,14 @@ variable "soft_delete_retention_days" {
     error_message = "Retention days value can be between `7` and `90` days."
   }
 }
+
+variable "tags" {
+  description = "(Optional) A mapping of tags to assign to the resource."
+  type        = map(string)
+  default     = {}
+}
+
+# ------------------------------------------------------------------------------
 
 variable "certificate_contacts" {
   description = "Contact information to send notifications triggered by certificate lifetime events."
@@ -105,12 +121,6 @@ variable "certificate_contacts" {
     ]) == length(var.certificate_contacts)
     error_message = "email address is not in the right format"
   }
-}
-
-variable "tags" {
-  description = "Tags to apply on Key Vault resource."
-  type        = map(string)
-  default     = {}
 }
 
 variable "admin_objects_ids" {
@@ -145,12 +155,6 @@ variable "reader_objects_ids" {
 #---------------------------------------------------------
 # Private Endpoint for Key Vault
 #---------------------------------------------------------
-
-variable "enable_private_endpoint" {
-  description = "Whether to use private endpoint with the Azure Key Vault."
-  type        = bool
-  default     = true
-}
 
 variable "private_endpoint_subnet" {
   description = "Network information required to create a private endpoint."
