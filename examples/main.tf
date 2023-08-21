@@ -6,7 +6,7 @@ resource "azurerm_resource_group" "example" {
 data "azurerm_client_config" "this" {}
 
 module "keyvault" {
-  source = "https://github.com/benyboy84/terraform-azurerm-key_vault?ref=v1.0.0"
+  source = "../"
 
   name                        = "example"
   location                    = azurerm_resource_group.example.location
