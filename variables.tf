@@ -136,8 +136,8 @@ variable "tags" {
 }
 
 # ------------------------------------------------------------------------------
-
-
+# Access
+# ------------------------------------------------------------------------------
 
 variable "admin_objects_ids" {
   description = "IDs of the objects that can do all operations on all keys, secrets and certificates."
