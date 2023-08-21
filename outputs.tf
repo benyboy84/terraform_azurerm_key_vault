@@ -14,5 +14,5 @@ output "id" {
 
 output "uri" {
   description = "The URI of the Key Vault, used for performing operations on keys and secrets."
-  value       = azurerm_key_vault.this.uri
+  value       = azurerm_key_vault.this.vault_uri
 }
