@@ -47,9 +47,9 @@ variable "contacts" {
 
   validation {
     condition = length([
-      for contact in var.certificate_contacts : true
+      for contact in var.contacts : true
       if can(regex("^.*@.*\\..*$", contact.email))
-    ]) == length(var.certificate_contacts)
+    ]) == length(var.contacts)
     error_message = "Email address is not in the right format"
   }
 }
