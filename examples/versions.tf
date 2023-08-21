@@ -1,4 +1,3 @@
-# Configure the minimum required providers supported
 terraform {
 
   required_providers {

@@ -24,7 +24,7 @@ variable "sku_name" {
 
 
   validation {
-    condition     = contains(["standard", "premium"], var.sku_name)
+    condition     = sku_name != null ? contains(["standard", "premium"], var.sku_name) ? true : false : true
     error_message = "Possible values are `standard` and `premium`."
   }
 }
